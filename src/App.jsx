@@ -3,12 +3,36 @@ import TodoList from './features/TodoList/TodoList.jsx'
 import TodoForm from './features/TodoForm.jsx'
 import { useState } from 'react'
 import { useEffect } from 'react'
+import TodosViewForm from './features/TodosViewForm.jsx';
+
+const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
+
+const encodeUrl = ({ sortField, sortDirection, queryString }) => {
+  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+
+  let searchQuery = "";
+
+  if (queryString) {
+    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+  }
+
+  return encodeURI(`${url}?${sortQuery}${searchQuery}`);
+};
 
 function App() {
   
   const [todoList,setTodoList] = useState([])
   
   const [isSaving,setIsSaving] = useState(false);
+
+  // State variables created for filter/sorting, in this case based on time and desc
+
+  const [sortField,setSortField] = useState("createdTime");
+  const [sortDirection, setSortDirection] = useState("desc");
+
+  // State Variables for queryString
+
+  const [queryString, setQueryString] = useState("");
 
   const addTodo = async (title) => { // Changed newTodo to title
   const payload = {
@@ -48,7 +72,7 @@ function App() {
 
     try{
       setIsSaving(true);
-      const resp = await fetch(url, options);
+      const resp = await fetch(encodeUrl ({ sortField, sortDirection, queryString }), options);
 
       if (!resp.ok){
       throw new Error(resp.message)
@@ -113,7 +137,7 @@ function App() {
     };
 
     try{
-      const resp = await fetch(url, options);
+      const resp = await fetch(encodeUrl ({ sortField, sortDirection, queryString }), options);
       if (!resp.ok){
       throw new Error(resp.message)
       }
@@ -162,7 +186,7 @@ function App() {
     };
 
     try{
-      const resp = await fetch(url, options);
+      const resp = await fetch(encodeUrl ({ sortField, sortDirection, queryString }), options);
       if (!resp.ok){
       throw new Error(resp.message)
       }
@@ -193,7 +217,6 @@ function App() {
 
   const [errorMessage,setErrorMessage] = useState("");
 
-  const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   useEffect(() => {
@@ -207,7 +230,7 @@ function App() {
     };
 
     try{
-      const resp = await fetch(url, options);
+      const resp = await fetch(encodeUrl ({ sortField, sortDirection, queryString }), options);
       if (!resp.ok){
       throw new Error(resp.message)
       }
@@ -238,7 +261,7 @@ function App() {
     };
     fetchTodos();
   
-  },[]);
+  },[sortField , sortDirection, queryString]);
 
 // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA I put isloading in TodoList instead of TODOFORM WHY!?!?!?!?!?!?!?!?!?
   return (
@@ -246,6 +269,18 @@ function App() {
     <h1>Todo List</h1>
     <TodoForm onAddTodo={addTodo} isSaving={isSaving}></TodoForm>
     <TodoList todoList={todoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading}></TodoList>
+
+    <hr />
+
+    <TodosViewForm 
+    sortField={sortField} 
+    setSortField={setSortField} 
+    sortDirection={sortDirection} 
+    setSortDirection={setSortDirection} 
+    queryString={queryString}
+    setQueryString={setQueryString}
+    ></TodosViewForm>
+
     {errorMessage ? 
     (<div> 
    
