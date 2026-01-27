@@ -4,20 +4,24 @@ import TodoForm from './features/TodoForm.jsx'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import TodosViewForm from './features/TodosViewForm.jsx';
+import { useCallback } from 'react'
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
-const encodeUrl = ({ sortField, sortDirection, queryString }) => {
-  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
 
-  let searchQuery = "";
+//Taking the code inside the arrow function of encode URL(Helper Function) and puttin it inside variable encodeURL
 
-  if (queryString) {
-    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-  }
+// const encodeUrl = ({ sortField, sortDirection, queryString }) => {
+//   // let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
 
-  return encodeURI(`${url}?${sortQuery}${searchQuery}`);
-};
+//   // let searchQuery = "";
+
+//   // if (queryString) {
+//   //   searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+//   // }
+
+//   // return encodeURI(`${url}?${sortQuery}${searchQuery}`);
+// };
 
 function App() {
   
@@ -33,6 +37,19 @@ function App() {
   // State Variables for queryString
 
   const [queryString, setQueryString] = useState("");
+
+  const encodeUrl = useCallback(() => {  
+  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+
+  let searchQuery = "";
+
+  if (queryString) {
+    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+  }
+
+  return encodeURI(`${url}?${sortQuery}${searchQuery}`);}
+  
+  ,[sortField, sortDirection, queryString])
 
   const addTodo = async (title) => { // Changed newTodo to title
   const payload = {
@@ -72,7 +89,7 @@ function App() {
 
     try{
       setIsSaving(true);
-      const resp = await fetch(encodeUrl ({ sortField, sortDirection, queryString }), options);
+      const resp = await fetch(encodeUrl(), options);
 
       if (!resp.ok){
       throw new Error(resp.message)
@@ -137,7 +154,7 @@ function App() {
     };
 
     try{
-      const resp = await fetch(encodeUrl ({ sortField, sortDirection, queryString }), options);
+      const resp = await fetch(encodeUrl(), options);
       if (!resp.ok){
       throw new Error(resp.message)
       }
@@ -186,7 +203,7 @@ function App() {
     };
 
     try{
-      const resp = await fetch(encodeUrl ({ sortField, sortDirection, queryString }), options);
+      const resp = await fetch(encodeUrl(), options);
       if (!resp.ok){
       throw new Error(resp.message)
       }
@@ -230,7 +247,7 @@ function App() {
     };
 
     try{
-      const resp = await fetch(encodeUrl ({ sortField, sortDirection, queryString }), options);
+      const resp = await fetch(encodeUrl(), options);
       if (!resp.ok){
       throw new Error(resp.message)
       }
