@@ -278,7 +278,7 @@ function App() {
     };
     fetchTodos();
   
-  },[sortField , sortDirection, queryString]);
+  },[sortField , sortDirection, queryString, encodeUrl, token]);
 
 // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA I put isloading in TodoList instead of TODOFORM WHY!?!?!?!?!?!?!?!?!?
   return (

@@ -20,7 +20,7 @@ const TodosViewForm = ({ sortField, setSortField, sortDirection, setSortDirectio
    () => clearTimeout(debounce)
   )
 
-  }, [localQueryString, setlocalQueryString]);
+  }, [localQueryString, setQueryString]); // Accidently had setLocalQueryString in the dependency array instead of setQueryString
 
 
   return (
