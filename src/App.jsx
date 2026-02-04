@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import TodosViewForm from './features/TodosViewForm.jsx';
 import { useCallback } from 'react'
+import styles from '../App.module.css'
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
@@ -282,7 +283,7 @@ function App() {
 
 // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA I put isloading in TodoList instead of TODOFORM WHY!?!?!?!?!?!?!?!?!?
   return (
-   <div>
+   <div className = {styles.appCenter}>
     <h1>Todo List</h1>
     <TodoForm onAddTodo={addTodo} isSaving={isSaving}></TodoForm>
     <TodoList todoList={todoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading}></TodoList>
@@ -299,7 +300,7 @@ function App() {
     ></TodosViewForm>
 
     {errorMessage ? 
-    (<div> 
+    (<div className = {styles.errorMessageBorder}> 
    
     <hr /> 
     
