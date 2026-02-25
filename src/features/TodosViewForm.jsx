@@ -1,6 +1,13 @@
 import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import styled from 'styled-components'
+
+const StyledElement = styled.div`
+padding: 5px 0;
+margin-bottom: 5px;
+margin-top: 6px;
+`; 
 
 const TodosViewForm = ({ sortField, setSortField, sortDirection, setSortDirection, queryString, setQueryString }) => {
   
@@ -25,7 +32,7 @@ const TodosViewForm = ({ sortField, setSortField, sortDirection, setSortDirectio
 
   return (
     <form onSubmit={preventRefresh}>
-        <div>
+        <StyledElement>
         <label htmlFor="search">Search todos:</label>
         <input 
           id="search"
@@ -36,9 +43,9 @@ const TodosViewForm = ({ sortField, setSortField, sortDirection, setSortDirectio
         <button type="button" onClick={() => setlocalQueryString("")}>
             Clear
         </button>
-      </div>
+      </StyledElement>
 
-      <div>
+      <StyledElement>
         <label htmlFor="sortField">Sort by</label>
             <select 
             id="sortField" 
@@ -58,7 +65,7 @@ const TodosViewForm = ({ sortField, setSortField, sortDirection, setSortDirectio
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
             </select>
-      </div>
+      </StyledElement>
     </form>
   );
 };
