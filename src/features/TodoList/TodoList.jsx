@@ -1,4 +1,5 @@
 import TodoListItem from './TodoListItem.jsx'
+import styles from '../../../TodoList.module.css'
 
 function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }){
 
@@ -9,7 +10,7 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }){
 
     filteredTodoList.length === 0 
     ? ( isLoading ? (<p>Is loading...</p>):  (<p>You have to add a todo first...</p>))
-    : (<ul>{filteredTodoList.map(todo => <TodoListItem key = {todo.id} todo ={todo} onCompleteTodo={onCompleteTodo} onUpdateTodo={onUpdateTodo} isLoading={isLoading}/>)}</ul>
+    : (<ul className = {styles.removalLists}>{filteredTodoList.map(todo => <TodoListItem key = {todo.id} todo ={todo} onCompleteTodo={onCompleteTodo} onUpdateTodo={onUpdateTodo} isLoading={isLoading}/>)}</ul>
     ))}
     
 

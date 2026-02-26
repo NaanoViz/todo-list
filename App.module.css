@@ -1,0 +1,11 @@
+div.appCenter{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+div.errorMessageBorder{
+    border: 2px;
+    border-style: solid;
+    border-color: black;
+}
