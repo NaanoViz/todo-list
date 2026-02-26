@@ -329,3 +329,6 @@ export default App
 // }
 
 // export default App;
+
+Insetad of ^, can also do 
+<div className={`app-background ${styles.appCenter}`}></div>

@@ -38,12 +38,23 @@ text-decoration: none;
   margin-left: 1px;
 }
 
-.app-background {
+
+
+/* Can do below instead of Double Below, create notebook effect using css insetad of image */
+/* .app-background {
+min-height: 100vh;
+background-image:
+linear-gradient(#E0E0E0 1px, transparent 1px),
+linear-gradient(90deg, #E0E0E0 1px, transparent 1px);
+background-size: 30px 30px;
+} */
+
+/* .app-background {
   background-image: url("/Notebook.PNG"); 
   height: 100vh;
   background-size: cover;
   background-repeat: no-repeat;
-}
+} */
 
 /* *{
     margin: 0;
