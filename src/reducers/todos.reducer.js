@@ -26,26 +26,6 @@ function reducer(state = initialState, action) {
                 isLoading: true,
             };
 
-        
-        //Error???
-        //     const fetchedTodos = actions.records.map((record) => {
-        //     const todo = {
-        //         id: record.id,
-        //         ...record.fields,
-                
-        //     };
-        //     if (!todo.isCompleted){
-        //         todo.isCompleted = false;
-        //     }
-        //     return todo;
-        //     });
-
-        //  return{
-        //      ...state,
-        //     isLoading: true,
-        //     todoList: actions.records.map,
-        //     isLoading:false,
-        //     };
 
         case actions.loadTodos:
 
