@@ -170,7 +170,6 @@ function App() {
       throw new Error(resp.message)
       }
 
-    setTodoList(updatedTodos)
     }
     catch(error){
       dispatch({ 
@@ -292,7 +291,7 @@ function App() {
   
   },[sortField , sortDirection, queryString, encodeUrl, token]);
 
-// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA I put isloading in TodoList instead of TODOFORM WHY!?!?!?!?!?!?!?!?!?
+
   return (
    <div className = {styles.appCenter}>
     <h1>Todo List</h1>
