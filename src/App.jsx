@@ -12,34 +12,31 @@ import {
   actions as todoActions,
   initialState as initialTodosState,
 } from './reducers/todos.reducer.js';
+import TodosPage from './pages/TodosPage';
+import Header from './shared/Header.jsx';
+import { Routes, Route, useLocation } from 'react-router'
+import About from './pages/About.jsx';
+import NotFound from './pages/NotFound.jsx'
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
-
-//Taking the code inside the arrow function of encode URL(Helper Function) and puttin it inside variable encodeURL
-
-// const encodeUrl = ({ sortField, sortDirection, queryString }) => {
-//   // let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-
-//   // let searchQuery = "";
-
-//   // if (queryString) {
-//   //   searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-//   // }
-
-//   // return encodeURI(`${url}?${sortQuery}${searchQuery}`);
-// };
-
 function App() {
+  
+  const [title, setTitle] = useState("Todo List");
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setTitle("Todo List");
+    } else if (location.pathname === "/about") {
+      setTitle("About");
+    } else {
+      setTitle("Not Found");
+    }
+  }, [location]);
 
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
 
-  
-  // const [todoList,setTodoList] = useState([])
-  
-  // const [isSaving,setIsSaving] = useState(false);
-
-  // State variables created for filter/sorting, in this case based on time and desc
 
   const [sortField,setSortField] = useState("createdTime");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -74,20 +71,6 @@ function App() {
   };
 
     
-  // const [isSaving,setIsSaving] = useState(false);
-
-  // const addTodo = async (newTodo) => {
-  // const payload = {
-  //   records: [
-  //   {
-  //     fields: {
-  //       title: newTodo.title,
-  //       isCompleted: newTodo.isCompleted,
-  //     },
-  //   },
-  // ],
-  // };
-
     const options = {
       method: 'POST',
       headers: {
@@ -129,16 +112,6 @@ function App() {
     };
   
 
-
-  // function completeTodo(Id){
-  // const updatedTodos = todoList.map((todo) => {
-  //   if (todo.id === Id){
-  //     return {...todo, isCompleted: true};
-  //     } 
-  //     return todo;
-  //   })
-  //   setTodoList(updatedTodos)
-  // }
     
     const completeTodo = async (Id) => {
     const originalTodo = todoState.todoList.find((todo) => todo.id === Id)
@@ -258,18 +231,6 @@ function App() {
     
     const { records } = await resp.json();
   
-    //for UseEffect actions.todoClausd  
-    // const fetchedTodos = records.map((record) => {
-    //   const todo = {
-    //     id: record.id,
-    //     ...record.fields,
-        
-    //   };
-    //   if (!todo.isCompleted){
-    //     todo.isCompleted = false;
-    //   }
-    //   return todo;
-    // });
 
     dispatch({ 
           type: todoActions.loadTodos, 
@@ -294,20 +255,36 @@ function App() {
 
   return (
    <div className = {styles.appCenter}>
-    <h1>Todo List</h1>
-    <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving}></TodoForm>
-    <TodoList todoList={todoState.todoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={todoState.isLoading}></TodoList>
+    <Header title={title} />
+     <Routes>
+        <Route path="/" element={
+           <TodosPage 
+            TodoForm={TodoForm}
+            TodoList={TodoList}
+            TodosViewForm={TodosViewForm}
+            
+            onAddTodo={addTodo} 
+            isSaving={todoState.isSaving}
+            todoList={todoState.todoList}
+            onCompleteTodo={completeTodo}
+            onUpdateTodo={updateTodo}
+            isLoading={todoState.isLoading}
 
-    <hr />
+            //Trying To Pass TodoStates
+            sortField={sortField}
+            setSortField={setSortField}
+            sortDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            queryString={queryString}
+            setQueryString={setQueryString}
+           />   
+        }
+/>
 
-    <TodosViewForm 
-    sortField={sortField} 
-    setSortField={setSortField} 
-    sortDirection={sortDirection} 
-    setSortDirection={setSortDirection} 
-    queryString={queryString}
-    setQueryString={setQueryString}
-    ></TodosViewForm>
+        <Route path="/about" element={<About />} />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
 
     {todoState.errorMessage ? 
     (<div className = {styles.errorMessageBorder}> 
@@ -329,16 +306,3 @@ function App() {
 export default App
 
 
-// import './App.css'; 
-
-// function App() {
-//   return (
-//     <div className="app-background">
-//     </div>
-//   );
-// }
-
-// export default App;
-
-// Insetad of ^, can also do 
-// <div className={`app-background ${styles.appCenter}`}></div>
