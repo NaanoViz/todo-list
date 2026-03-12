@@ -6,6 +6,12 @@ import { useEffect } from 'react'
 import TodosViewForm from './features/TodosViewForm.jsx';
 import { useCallback } from 'react'
 import styles from '../App.module.css'
+import { useReducer } from 'react';
+import {
+  reducer as todosReducer,
+  actions as todoActions,
+  initialState as initialTodosState,
+} from './reducers/todos.reducer.js';
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
@@ -25,10 +31,13 @@ const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${impor
 // };
 
 function App() {
+
+  const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
+
   
-  const [todoList,setTodoList] = useState([])
+  // const [todoList,setTodoList] = useState([])
   
-  const [isSaving,setIsSaving] = useState(false);
+  // const [isSaving,setIsSaving] = useState(false);
 
   // State variables created for filter/sorting, in this case based on time and desc
 
@@ -89,7 +98,8 @@ function App() {
       };
 
     try{
-      setIsSaving(true);
+      dispatch({ type: todoActions.startRequest });
+
       const resp = await fetch(encodeUrl(), options);
 
       if (!resp.ok){
@@ -97,26 +107,23 @@ function App() {
     }
     const { records } = await resp.json();
 
-    const savedTodo = {
-      id:records[0].id,
-      ...records[0].fields,
-    };
-
-    if (!records[0].fields.isCompleted) {
-      savedTodo.isCompleted = false;
-    }
-
-    setTodoList([...todoList, savedTodo]);      
+      dispatch({ 
+      type: todoActions.addTodo, 
+      record: records[0] 
+    });      
   }
     
     
     catch(error){
     console.error(error);
-    setErrorMessage(error.message);
+    dispatch({ 
+      type: todoActions.setLoadError, 
+      error: error 
+    });
     }
     
     finally {
-      setIsSaving(false);
+      dispatch({ type: todoActions.endRequest });
     }
 
     };
@@ -134,7 +141,10 @@ function App() {
   // }
     
     const completeTodo = async (Id) => {
-    const originalTodo = todoList.find((todo) => todo.id === Id)
+    const originalTodo = todoState.todoList.find((todo) => todo.id === Id)
+    
+    dispatch({ type: todoActions.completeTodo, id: Id });
+    
     const payload = {
     records: [
         {
@@ -159,31 +169,31 @@ function App() {
       if (!resp.ok){
       throw new Error(resp.message)
       }
-      ;
-      const updatedTodos = todoList.map((todo) => {
-      if (todo.id === Id){
-      return {...todo, isCompleted: true};
-      } 
-      return todo;
-    })
-    setTodoList(updatedTodos)
+
     }
     catch(error){
-    console.error(error);
-    setErrorMessage(`${error.message}. Reverting todo...`);
-    const revertedTodos = {...todoList, originalTodo};
-    setTodoList([...revertedTodos]);
+      dispatch({ 
+        type: todoActions.revertTodo, 
+        editedTodo: originalTodo, 
+        error: error 
+});
   }
   
   finally {
-      setIsSaving(false);
+    dispatch({ type: todoActions.endRequest });
     }
   };
 
   
 
   const updateTodo = async (editedTodo) => {
-    const originalTodo = todoList.find((todo) => todo.id === editedTodo.id)
+    const originalTodo = todoState.todoList.find((todo) => todo.id === editedTodo.id)
+
+    dispatch({ 
+    type: todoActions.updateTodo, 
+    editedTodo: editedTodo 
+  });
+
     const payload = {
     records: [
         {
@@ -208,39 +218,32 @@ function App() {
       if (!resp.ok){
       throw new Error(resp.message)
       }
-      const updatedTodos = todoList.map((todo) => {
-      if (todo.id === editedTodo.id){
-      return editedTodo;
-      } 
-      return todo;
-      })
-      setTodoList(updatedTodos)
-      ;
 
     }
     catch(error){
-    console.error(error);
-    setErrorMessage(`${error.message}. Reverting todo...`);
-    const revertedTodos = {...todoList, originalTodo};
-    setTodoList([...revertedTodos]);
+    dispatch({ 
+      type: todoActions.revertTodo, 
+      editedTodo: originalTodo, 
+      error: error 
+    });
   }
   
   finally {
-      setIsSaving(false);
+      dispatch({ type: todoActions.endRequest });
     }
   };
 
 
-  const [isLoading,setIsLoading] = useState(false);
+  // const [isLoading,setIsLoading] = useState(false);
 
-  const [errorMessage,setErrorMessage] = useState("");
+  // const [errorMessage,setErrorMessage] = useState("");
 
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   useEffect(() => {
     const fetchTodos = async () => { 
       
-      setIsLoading(true); 
+      dispatch({ type: todoActions.fetchTodos });
 
       const options = {
       method:"GET",
@@ -254,26 +257,33 @@ function App() {
       }
     
     const { records } = await resp.json();
-    const fetchedTodos = records.map((record) => {
-      const todo = {
-        id: record.id,
-        ...record.fields,
+  
+    //for UseEffect actions.todoClausd  
+    // const fetchedTodos = records.map((record) => {
+    //   const todo = {
+    //     id: record.id,
+    //     ...record.fields,
         
-      };
-      if (!todo.isCompleted){
-        todo.isCompleted = false;
-      }
-      return todo;
-    });
+    //   };
+    //   if (!todo.isCompleted){
+    //     todo.isCompleted = false;
+    //   }
+    //   return todo;
+    // });
 
-    setTodoList(fetchedTodos); 
-
+    dispatch({ 
+          type: todoActions.loadTodos, 
+          records: records 
+   });
+   
     }
     catch(error){
-      setErrorMessage(error.message);
+      dispatch({ 
+          type: todoActions.setLoadError, 
+          error: error 
+        });
     }
     finally {
-      setIsLoading(false);
     } 
     
     };
@@ -281,12 +291,12 @@ function App() {
   
   },[sortField , sortDirection, queryString, encodeUrl, token]);
 
-// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA I put isloading in TodoList instead of TODOFORM WHY!?!?!?!?!?!?!?!?!?
+
   return (
    <div className = {styles.appCenter}>
     <h1>Todo List</h1>
-    <TodoForm onAddTodo={addTodo} isSaving={isSaving}></TodoForm>
-    <TodoList todoList={todoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={isLoading}></TodoList>
+    <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving}></TodoForm>
+    <TodoList todoList={todoState.todoList} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} isLoading={todoState.isLoading}></TodoList>
 
     <hr />
 
@@ -299,14 +309,14 @@ function App() {
     setQueryString={setQueryString}
     ></TodosViewForm>
 
-    {errorMessage ? 
+    {todoState.errorMessage ? 
     (<div className = {styles.errorMessageBorder}> 
    
     <hr /> 
     
-    <p>errorMessage</p> 
+    <p>{todoState.errorMessage}</p> 
     
-    <button id = "errorMessageDis" disabled = {errorMessage}>RemoveButton </button> 
+    <button id = "errorMessageDis" onClick={() => dispatch({ type: todoActions.clearError })}>RemoveButton </button> 
     
     </div>) :'No Error' }
     </div>
@@ -330,5 +340,5 @@ export default App
 
 // export default App;
 
-Insetad of ^, can also do 
-<div className={`app-background ${styles.appCenter}`}></div>
+// Insetad of ^, can also do 
+// <div className={`app-background ${styles.appCenter}`}></div>

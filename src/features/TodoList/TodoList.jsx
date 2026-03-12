@@ -1,5 +1,5 @@
 import TodoListItem from './TodoListItem.jsx'
-import styles from '../../../TodoList.module.css'
+import styles from './TodoList.module.css'
 
 function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }){
 
