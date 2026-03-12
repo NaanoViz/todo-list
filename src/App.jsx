@@ -16,30 +16,9 @@ import {
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
 
-//Taking the code inside the arrow function of encode URL(Helper Function) and puttin it inside variable encodeURL
-
-// const encodeUrl = ({ sortField, sortDirection, queryString }) => {
-//   // let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-
-//   // let searchQuery = "";
-
-//   // if (queryString) {
-//   //   searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-//   // }
-
-//   // return encodeURI(`${url}?${sortQuery}${searchQuery}`);
-// };
-
 function App() {
 
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
-
-  
-  // const [todoList,setTodoList] = useState([])
-  
-  // const [isSaving,setIsSaving] = useState(false);
-
-  // State variables created for filter/sorting, in this case based on time and desc
 
   const [sortField,setSortField] = useState("createdTime");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -74,19 +53,7 @@ function App() {
   };
 
     
-  // const [isSaving,setIsSaving] = useState(false);
 
-  // const addTodo = async (newTodo) => {
-  // const payload = {
-  //   records: [
-  //   {
-  //     fields: {
-  //       title: newTodo.title,
-  //       isCompleted: newTodo.isCompleted,
-  //     },
-  //   },
-  // ],
-  // };
 
     const options = {
       method: 'POST',
@@ -130,15 +97,6 @@ function App() {
   
 
 
-  // function completeTodo(Id){
-  // const updatedTodos = todoList.map((todo) => {
-  //   if (todo.id === Id){
-  //     return {...todo, isCompleted: true};
-  //     } 
-  //     return todo;
-  //   })
-  //   setTodoList(updatedTodos)
-  // }
     
     const completeTodo = async (Id) => {
     const originalTodo = todoState.todoList.find((todo) => todo.id === Id)
@@ -234,9 +192,6 @@ function App() {
   };
 
 
-  // const [isLoading,setIsLoading] = useState(false);
-
-  // const [errorMessage,setErrorMessage] = useState("");
 
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
@@ -258,18 +213,6 @@ function App() {
     
     const { records } = await resp.json();
   
-    //for UseEffect actions.todoClausd  
-    // const fetchedTodos = records.map((record) => {
-    //   const todo = {
-    //     id: record.id,
-    //     ...record.fields,
-        
-    //   };
-    //   if (!todo.isCompleted){
-    //     todo.isCompleted = false;
-    //   }
-    //   return todo;
-    // });
 
     dispatch({ 
           type: todoActions.loadTodos, 
@@ -329,16 +272,3 @@ function App() {
 export default App
 
 
-// import './App.css'; 
-
-// function App() {
-//   return (
-//     <div className="app-background">
-//     </div>
-//   );
-// }
-
-// export default App;
-
-// Insetad of ^, can also do 
-// <div className={`app-background ${styles.appCenter}`}></div>
